@@ -1,16 +1,15 @@
 FROM ruby:2.6
 LABEL maintainer='leifcr@gmail.com'
-LABEL description='Image for running rails 5 apps on kubernetes with mysql-8 client libs, with common gems preinstalled. Based on ruby:2.6 image'
+LABEL description='Image for running rails 6 apps on kubernetes with mysql-8 client libs, with common gems preinstalled. Based on ruby:2.6 image'
 
 ENV APP_HOME /app
 ENV LANG C.UTF-8
 
-# For stretch:
-# RUN  apt-get install -y apt-transport-https ca-certificates gnupg wget --no-install-recommends && \
+RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 5072E1F5
+
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && apt-key adv --keyserver pgp.mit.edu --recv-keys 5072E1F5 \
     && echo "deb http://repo.mysql.com/apt/debian/ buster mysql-8.0" | tee /etc/apt/sources.list.d/mysqlclient.list \
     && apt-get update -q \
     && apt-get install -y \
@@ -19,6 +18,7 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - \
        libxslt1-dev \
        ghostscript \
        libmysqlclient-dev \
+       libmysqlclient21 \
        wget \
        curl \
        nodejs \
