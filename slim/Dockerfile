@@ -21,6 +21,7 @@ RUN apt-get update -q \
        git \
        ghostscript \
        default-mysql-client \
+       postgresql-client \
        wget \
        curl \
        nodejs \
