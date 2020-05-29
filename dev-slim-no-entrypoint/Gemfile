@@ -80,7 +80,7 @@ gem 'mysql-binuuid-rails'
 
 # Asset precompilation
 # Using webpacker for js
-gem 'webpacker', '~> 4.0'
+gem 'webpacker', '~> 5.0'
 
 # Add if asset js is used instead of webpacker
 # gem 'uglifier', '>= 1.3.0'
@@ -137,7 +137,7 @@ gem 'pundit'
 gem 'sitemap_generator'
 
 group :development, :test do
-  gem 'rspec-rails', '~> 3.8' # , group: [:development, :test]
+  gem 'rspec-rails', '~> 4.0' # , group: [:development, :test]
   gem 'rspec-retry'
   gem 'faker'
   gem 'puma'
