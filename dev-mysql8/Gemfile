@@ -21,10 +21,10 @@ gem 'rails-i18n'
 # kaminari must be before elasticsearch to work with es
 gem 'kaminari'
 
-gem 'elasticsearch', '~> 7.0'
-gem 'elasticsearch-rails', '~> 7.0'
-gem 'elasticsearch-model', '~> 7.0' # rubocop:disable Bundler/OrderedGems
-gem 'elasticsearch-dsl' # rubocop:disable Bundler/OrderedGems
+# gem 'elasticsearch', '~> 7.0'
+# gem 'elasticsearch-rails', '~> 7.0'
+# gem 'elasticsearch-model', '~> 7.0' # rubocop:disable Bundler/OrderedGems
+# gem 'elasticsearch-dsl' # rubocop:disable Bundler/OrderedGems
 
 # Nice progressbar to use in rake tasks
 gem 'ruby-progressbar', require: false
@@ -90,7 +90,8 @@ gem 'webpacker', '~> 5.0'
 # gem 'therubyracer' # , group: [:development] # execjs/uglifier requirement
 
 # Error Tracking
-gem 'sentry-raven'
+# gem 'sentry-raven'
+gem 'rollbar'
 
 group :staging, :production do
   # Profiler
