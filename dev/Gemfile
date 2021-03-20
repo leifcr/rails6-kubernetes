@@ -3,7 +3,6 @@ source 'https://rubygems.org'
 gem 'bootsnap', require: false
 gem 'rails', '~> 6.0'
 
-# Lock to 1.0.4 until rails 5.2.4 is released, or upgrade to 6.0
 gem 'rails-html-sanitizer'
 
 # Better logging
@@ -21,21 +20,20 @@ gem 'rails-i18n'
 # kaminari must be before elasticsearch to work with es
 gem 'kaminari'
 
-# gem 'elasticsearch', '~> 7.0'
-# gem 'elasticsearch-rails', '~> 7.0'
-# gem 'elasticsearch-model', '~> 7.0' # rubocop:disable Bundler/OrderedGems
-# gem 'elasticsearch-dsl' # rubocop:disable Bundler/OrderedGems
+
+gem 'elasticsearch', '~> 7.1'       # Upgrade to 5.x (Can do 6.x as soon as elasticsearch-rails is 6.x compatible)
+gem 'elasticsearch-rails', '~> 7.1' # 5.x should be compatible with 6.x
+gem 'elasticsearch-model', '~> 7.1' # 5.x should be compatible with 6.x # rubocop:disable Bundler/OrderedGems
+gem 'elasticsearch-dsl'             # rubocop:disable Bundler/OrderedGems
 
 # Nice progressbar to use in rake tasks
 gem 'ruby-progressbar', require: false
 
-# Pin to 0.4 for rails 4.x
-# Change to 0.5.x upgrade to rails 5.x
 gem 'mysql2', '~> 0.5.0'
 
 gem 'jbuilder', '~> 2.0'
 
-gem 'haml' # Until 5.0.3 has been released with https://github.com/haml/haml/pull/952 included
+gem 'haml'
 gem 'haml-rails'
 
 gem 'autoprefixer-rails'
@@ -44,7 +42,7 @@ gem 'bootstrap'
 
 # To include the icon helper.
 gem 'font-awesome-sass', '~> 5.8'
-gem 'sassc-rails' #, '~> 5.0'
+gem 'sassc-rails'
 
 gem 'mini_magick'
 
@@ -56,17 +54,12 @@ gem 'leifcr-refile-mini_magick', require: 'refile/mini_magick'
 
 gem 'carrierwave'
 
-# Use interactor and require in application until interactor-rails gem is fixed
-# in config/application.rb: require 'interactor'
-
-gem 'interactor'
-
-# gem 'interactor-rails', '~> 2.0'
+gem 'interactor-rails', '~> 2.0'
 
 # For CC payments
-gem 'stripe'
+# gem 'stripe'
 
-# For sending public stripe token to js
+# For sending data from backend into js
 gem 'gon'
 
 # For states: https://github.com/gocardless/statesman
@@ -82,15 +75,9 @@ gem 'mysql-binuuid-rails'
 # Using webpacker for js
 gem 'webpacker', '~> 5.0'
 
-# Add if asset js is used instead of webpacker
-# gem 'uglifier', '>= 1.3.0'
-# uglifier requirement
-# gem 'execjs'
-# gem 'mini_racer'
-# gem 'therubyracer' # , group: [:development] # execjs/uglifier requirement
-
 # Error Tracking
 # gem 'sentry-raven'
+
 gem 'rollbar'
 
 group :staging, :production do
@@ -102,13 +89,16 @@ group :staging, :production do
   # For using puma in production, the rails deployment package must include
   # a 'sidekart nginx' to serve static assets, or you must include
   gem 'passenger', require: 'phusion_passenger/rack_handler'
+  gem 'sidekiq_alive'
 end
 
 # gem 'delayed_job'
 # gem 'delayed_job_active_record'
 
 gem 'sidekiq'
-gem 'sidekiq_alive'
+
+# To ensure we don't do multiple requests for klarna if one is already in queue..
+gem 'activejob-uniqueness'
 
 # Forms
 gem 'simple_form', '~> 5.0'
@@ -116,7 +106,10 @@ gem 'country_select' # rubocop:disable Bundler/OrderedGems - countries must be a
 gem 'countries' # rubocop:disable Bundler/OrderedGems
 
 # Authentication
-gem 'devise'
+# See https://github.com/heartcombo/devise/issues/5326#issuecomment-776627602
+# Switch back to released version, as soon as new version is released
+gem "devise", github: "heartcombo/devise", branch: "master"
+# gem 'devise'
 gem 'devise-i18n'
 
 gem 'omniauth'
@@ -124,6 +117,7 @@ gem 'omniauth-facebook'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-linkedin-oauth2'
+gem 'omniauth-rails_csrf_protection'
 
 # For accessing google apis (YouTube etc)
 gem 'google-api-client'
@@ -138,12 +132,13 @@ gem 'pundit'
 gem 'sitemap_generator'
 
 group :development, :test do
-  gem 'rspec-rails', '~> 4.0' # , group: [:development, :test]
-  gem 'rspec-retry'
+  gem 'factory_bot_rails'
   gem 'faker'
   gem 'puma'
-  # gem 'thin'
-  gem 'factory_bot_rails' # , require: false # , group: [:test]
+  gem 'rspec-rails', '~> 5.0' # , group: [:development, :test]
+  gem 'rspec-retry'
+
+  gem 'bullet' # n+1 queries finder
 end
 
 group :test do
@@ -216,12 +211,14 @@ gem 'faraday' # do http requests over tons of adapters...
 gem 'enumerize'
 
 # For prettier pagination in urls
-gem 'routing-filter', git: 'https://github.com/leifcr/routing-filter.git', tag: 'v0.6.3'
+gem 'routing-filter', github: 'normedia/routing-filter', branch: 'rails-6.1'
 
 # For truncating html
 gem 'truncate_html'
 
 gem 'slack-ruby-client'
+
+gem 'easy-box-packer', github: 'leifcr/easy-box-packer'
 
 group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
@@ -256,5 +253,8 @@ group :development do
   # Better ruby/rails console
   gem 'pry-rails'
   gem 'pry-toys'
-  gem 'pry-byebug'
+  # Issues with rails 6 + pry-byebug
+  # gem 'pry-byebug'
+
+  gem 'rubocop-rails'
 end
