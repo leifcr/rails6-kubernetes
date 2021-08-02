@@ -25,4 +25,4 @@ jobs:
         with:
           push: true
           tags: leifcr/rails6-kubernetes:latest-dev-no-entrypoint
-          context: ./dev-no-entry-point/
+          context: ./dev-no-entrypoint/
