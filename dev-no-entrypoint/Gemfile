@@ -108,8 +108,8 @@ gem 'countries' # rubocop:disable Bundler/OrderedGems
 # Authentication
 # See https://github.com/heartcombo/devise/issues/5326#issuecomment-776627602
 # Switch back to released version, as soon as new version is released
-gem "devise", github: "heartcombo/devise", branch: "master"
-# gem 'devise'
+# gem "devise", github: "heartcombo/devise", branch: "master"
+gem 'devise'
 gem 'devise-i18n'
 
 gem 'omniauth'
