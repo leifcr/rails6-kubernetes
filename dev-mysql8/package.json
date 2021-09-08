@@ -37,7 +37,7 @@
     "select2-theme-bootstrap4": "^1.0.0",
     "slick-carousel": "^1.8.1",
     "superagent": "^6.1.0",
-    "sweetalert2": "^10.3.5",
+    "sweetalert2": "^11.1",
     "tui-image-editor": "^3.9.0",
     "turbolinks": "^5.2.0",
     "underscore": "^1.9.1",
