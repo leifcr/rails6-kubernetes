@@ -21,6 +21,7 @@ RUN apk add --update --no-cache \
   tzdata \
   git \
   cargo \
+  python3 \
   yarn && \
   rm -rf /var/cache/apk/* && \
   set -x && \
