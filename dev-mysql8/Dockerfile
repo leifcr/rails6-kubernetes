@@ -29,7 +29,6 @@ RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
        nodejs \
        yarn \
        cargo \
-       python3 \
     && apt-get install -y google-chrome-stable --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* && \
     set -x && \

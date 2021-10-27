@@ -27,7 +27,6 @@ RUN apt-get update -q \
        nodejs \
        yarn \
        cargo \
-       python3 \
     && rm -rf /var/lib/apt/lists/* && \
     set -x && \
     mkdir $APP_HOME && \
