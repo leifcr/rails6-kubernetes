@@ -16,4 +16,9 @@ cp yarn.lock ../dev-mysql8/
 yarn outdated
 cd ..
 bundle outdated --strict
+
+cd mysql8-client-min
+bundle update
+cd ..
+
 # gc -m "Update gems"
