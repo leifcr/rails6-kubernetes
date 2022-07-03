@@ -38,7 +38,6 @@
     "slick-carousel": "^1.8.1",
     "superagent": "^6.1.0",
     "sweetalert2": "^10.3.5",
-    "tui-image-editor": "^3.9.0",
     "turbolinks": "^5.2.0",
     "underscore": "^1.9.1",
     "uuid": "^8.1.0"
