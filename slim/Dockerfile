@@ -50,7 +50,7 @@ WORKDIR $APP_HOME
 # Add Gemfile
 COPY --chown=rails:rails Gemfile Gemfile.lock ./
 # Install gems
-RUN gem install bundler && bundle install --jobs 20 --retry 5 --without development:test
+RUN gem install bundler && BUNDLE_WITHOUT="development:test" bundle install --jobs 20 --retry 5
 
 # Set entry point to bundle exec, as all cmd's with rails should be prepended
 ENTRYPOINT ["docker-entrypoint.sh"]
