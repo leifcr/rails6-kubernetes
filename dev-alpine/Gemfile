@@ -89,7 +89,7 @@ group :staging, :production do
   # For using puma in production, the rails deployment package must include
   # a 'sidekart nginx' to serve static assets, or you must include
   gem 'passenger', require: 'phusion_passenger/rack_handler'
-  gem 'sidekiq_alive'
+  gem 'sidekiq-alive-next' # Supports sidekiq 7+
 end
 
 # gem 'delayed_job'
