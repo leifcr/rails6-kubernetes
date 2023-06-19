@@ -1,6 +1,6 @@
 FROM ruby:2.7-alpine
 LABEL org.opencontainers.image.authors='leifcr@gmail.com'
-LABEL description='Image for running rails 5 apps on kubernetes, with common gems preinstalled. Based on ruby:2.6-alpine image'
+LABEL description='Image for running rails 6 apps on kubernetes, with common gems preinstalled. Based on ruby:2.6-alpine image'
 
 ENV APP_HOME /app
 ENV LANG C.UTF-8
