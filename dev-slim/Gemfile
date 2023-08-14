@@ -152,6 +152,7 @@ group :test do
   gem 'capybara-selenium'
 
   # For testing on selenium against ff, chrome, edge and ie
+  # Selenium 4.11 manages drivers on it's own, so this is not needed when upgrading. to newer versions
   gem 'webdrivers'
 
   gem 'rails-controller-testing'
