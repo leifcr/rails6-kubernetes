@@ -15,6 +15,10 @@ case "$1" in
         command="bundle exec $@";;
         ./bin/webpack-dev-server|bin/webpack-dev-server|./bin/webpack|bin/webpack)
         command="bundle exec $@";;
+        ./bin/webpacker-dev-server|bin/webpacker-dev-server|./bin/webpacker|bin/webpacker)
+        command="bundle exec $@";;
+        ./bin/shakapacker-dev-server|bin/shakapacker-dev-server|./bin/shakapacker|bin/webpacker)
+        command="bundle exec $@";;
         "")
         command="bundle exec rails server";;
         *)
