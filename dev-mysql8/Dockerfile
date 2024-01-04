@@ -1,4 +1,4 @@
-FROM ruby:2.7
+FROM ruby:3.1
 LABEL org.opencontainers.image.authors='leifcr@gmail.com'
 LABEL description='Image for running rails 6 apps on kubernetes, with common gems preinstalled. Based on ruby:2.6 image'
 
@@ -8,11 +8,12 @@ ENV LANG C.UTF-8
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3A79BD29
 # RUN apt-key adv --keyserver pgp.mit.edu --recv-keys 3A79BD29
 
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
+    && apt-key adv --keyserver keyserver.ubuntu.com --recv-key B7B3B788A8D3785C \
+    && echo "deb https://repo.mysql.com/apt/debian/ bookworm mysql-8.0" | tee /etc/apt/sources.list.d/mysqlclient.list \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb https://repo.mysql.com/apt/debian/ bullseye mysql-8.0" | tee /etc/apt/sources.list.d/mysqlclient.list \
     && echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
     && apt-get update -q && apt-get upgrade -y \
     && apt-get install -y \
