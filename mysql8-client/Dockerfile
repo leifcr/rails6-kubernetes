@@ -16,6 +16,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get update -q && apt-get upgrade -y \
     && apt-get install -y \
        build-essential \
+       git \
        libxml2-dev \
        libxslt1-dev \
        ghostscript \

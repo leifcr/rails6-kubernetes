@@ -17,6 +17,7 @@ RUN apt-get update -q \
     && apt-get update -q && apt-get upgrade -y \
     && apt-get install -y \
        build-essential \
+       git \
        default-libmysqlclient-dev \
        libxml2-dev \
        libxslt1-dev \
