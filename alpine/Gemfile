@@ -221,6 +221,10 @@ gem 'slack-ruby-client'
 
 gem 'easy-box-packer', github: 'leifcr/easy-box-packer'
 
+gem 'net-smtp'
+gem 'net-pop'
+gem 'net-imap'
+
 group :development do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
