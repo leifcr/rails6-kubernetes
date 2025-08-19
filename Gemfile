@@ -217,8 +217,6 @@ gem 'routing-filter', github: 'normedia/routing-filter', branch: 'rails-6.1'
 # For truncating html
 gem 'truncate_html'
 
-gem 'slack-ruby-client'
-
 gem 'easy-box-packer', github: 'leifcr/easy-box-packer'
 
 gem 'net-smtp'
