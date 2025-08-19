@@ -56,12 +56,6 @@ gem 'carrierwave'
 
 gem 'interactor-rails', '~> 2.0'
 
-# For CC payments
-# gem 'stripe'
-
-# For sending data from backend into js
-gem 'gon'
-
 # For states: https://github.com/gocardless/statesman
 gem 'statesman'
 
@@ -72,8 +66,7 @@ gem 'mysql-binuuid-rails'
 # gem 'secure_headers'
 
 # Asset precompilation
-# Using webpacker for js
-gem 'webpacker', '~> 5.0'
+gem 'shakapacker'
 
 # Error Tracking
 # gem 'sentry-raven'

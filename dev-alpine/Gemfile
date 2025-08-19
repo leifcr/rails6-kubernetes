@@ -56,12 +56,6 @@ gem 'carrierwave'
 
 gem 'interactor-rails', '~> 2.0'
 
-# For CC payments
-# gem 'stripe'
-
-# For sending data from backend into js
-gem 'gon'
-
 # For states: https://github.com/gocardless/statesman
 gem 'statesman'
 
@@ -72,8 +66,7 @@ gem 'mysql-binuuid-rails'
 # gem 'secure_headers'
 
 # Asset precompilation
-# Using webpacker for js
-gem 'webpacker', '~> 5.0'
+gem 'shakapacker'
 
 # Error Tracking
 # gem 'sentry-raven'
@@ -216,8 +209,6 @@ gem 'routing-filter', github: 'normedia/routing-filter', branch: 'rails-6.1'
 
 # For truncating html
 gem 'truncate_html'
-
-gem 'slack-ruby-client'
 
 gem 'easy-box-packer', github: 'leifcr/easy-box-packer'
 
