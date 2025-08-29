@@ -8,13 +8,22 @@ ENV LANG C.UTF-8
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3A79BD29
 # RUN apt-key adv --keyserver pgp.mit.edu --recv-keys 3A79BD29
 
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-key B7B3B788A8D3785C \
-    && echo "deb https://repo.mysql.com/apt/debian/ bookworm mysql-8.0" | tee /etc/apt/sources.list.d/mysqlclient.list \
-    && apt-get update -q && apt-get upgrade -y \
-    && apt-get install -y \
+RUN set -eux; \
+    . /etc/os-release; CODENAME="${VERSION_CODENAME}"; echo "Detected Debian codename: $CODENAME"; \
+    apt-get update -q; \
+    apt-get install -y --no-install-recommends ca-certificates curl gnupg dirmngr; \
+    mkdir -p /usr/share/keyrings; \
+    # Yarn repo
+    curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/yarn.gpg; \
+    echo "deb [signed-by=/usr/share/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian stable main" > /etc/apt/sources.list.d/yarn.list; \
+    # NodeSource (adjust node_20.x if needed)
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - ; \
+    # MySQL APT repo (only if codename supported)
+    curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2023 | gpg --dearmor -o /usr/share/keyrings/mysql.gpg; \
+    echo "deb [signed-by=/usr/share/keyrings/mysql.gpg] https://repo.mysql.com/apt/debian ${CODENAME} mysql-8.0" > /etc/apt/sources.list.d/mysqlclient.list; \
+    apt-get update -q; \
+    apt-get upgrade -y; \
+    apt-get install -y \
        build-essential \
        git \
        libxml2-dev \
@@ -27,11 +36,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
        curl \
        nodejs \
        yarn \
-    && set -x && \
-    mkdir $APP_HOME && \
-    groupadd -g 1001 rails && \
-    useradd -s /bin/bash -m -d /home/rails --uid 1001 -g rails rails && \
-    chown rails:rails /app
+    && set -x; \
+    mkdir "$APP_HOME"; \
+    groupadd -g 1001 rails; \
+    useradd -s /bin/bash -m -d /home/rails --uid 1001 -g rails rails; \
+    apt-get purge -y --auto-remove gnupg dirmngr; \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy Imagemagick policy to allow converting PDF to thumbnails
 COPY imagemagick_policy.xml /etc/ImageMagick-6/policy.xml
