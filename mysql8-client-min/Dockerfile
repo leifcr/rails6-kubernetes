@@ -2,12 +2,10 @@ FROM ruby:3.1
 LABEL org.opencontainers.image.authors='leifcr@gmail.com'
 LABEL description='Image for running rails 6 apps on kubernetes with mysql-8 client libs, with common gems preinstalled. Based on ruby:2.6 image'
 
-ENV APP_HOME /app
-ENV LANG C.UTF-8
+ENV APP_HOME='/app'
+ENV LANG='C.UTF-8'
 
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3A79BD29
-# RUN apt-key adv --keyserver pgp.mit.edu --recv-keys 3A79BD29
-
+# Install dependencies
 RUN set -eux; \
     . /etc/os-release; CODENAME="${VERSION_CODENAME}"; echo "Detected Debian codename: $CODENAME"; \
     apt-get update -q; \

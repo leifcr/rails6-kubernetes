@@ -2,11 +2,9 @@ FROM ruby:3.1
 LABEL org.opencontainers.image.authors='leifcr@gmail.com'
 LABEL description='Image for running rails 6 apps on kubernetes with mysql-8 client libs, with common gems preinstalled. Based on ruby:2.6 image'
 
-ENV APP_HOME /app
-ENV LANG C.UTF-8
+ENV APP_HOME='/app'
+ENV LANG='C.UTF-8'
 
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 3A79BD29
-# RUN apt-key adv --keyserver pgp.mit.edu --recv-keys 3A79BD29
 # Install dependencies
 RUN set -eux; \
     . /etc/os-release; CODENAME="${VERSION_CODENAME}"; echo "Detected Debian codename: $CODENAME"; \
@@ -80,29 +78,37 @@ RUN gem install bundler && BUNDLE_WITHOUT="development:test" bundle install --jo
 # (Independent of app source; only changes if Gemfile or Passenger fork commit changes)
 
 # Step 1: Ensure fork + submodules present
-RUN set -Eeuo pipefail; \
+RUN set -eu; \
   echo "[1/3] Preparing passenger source"; \
-  PASSENGER_DIR="$(bundle show passenger)"; \
+  if ! PASSENGER_DIR="$(BUNDLE_WITHOUT='development:test' bundle info passenger --path 2>/dev/null)"; then \
+    echo "ERROR: passenger gem not installed yet."; \
+    echo "Check Gemfile contains: gem 'passenger' (not only inside an excluded group)"; \
+    echo "Installed gems (for debug):"; BUNDLE_WITHOUT='development:test' bundle list | sed -e 's/^/  /'; \
+    exit 1; \
+  fi; \
   echo "Passenger dir: $PASSENGER_DIR"; \
+  if [ -d "${PASSENGER_DIR}/build/support/vendor/cxxcodebuilder" ]; then \
+    echo "Vendor/cxxcodebuilder already present (maybe pre-fetched)"; \
+  fi; \
   if [ -d "${PASSENGER_DIR}/.git" ]; then \
-    echo "Updating submodules in existing passenger checkout"; \
-    git -C "${PASSENGER_DIR}" submodule sync --recursive; \
-    git -C "${PASSENGER_DIR}" submodule update --init --recursive; \
+    echo "Existing git metadata found in gem (unexpected for rubygems install). Updating submodules."; \
+    git -C "${PASSENGER_DIR}" submodule sync --recursive || true; \
+    git -C "${PASSENGER_DIR}" submodule update --init --recursive || true; \
   else \
-    echo "No .git in installed passenger gem; cloning fork (with submodules)"; \
+    echo "Overlaying fork (with submodules) onto gem directory"; \
     command -v rsync >/dev/null || { echo "ERROR: rsync not installed"; exit 1; }; \
     TMP_CLONE="$(mktemp -d)"; \
     git clone --branch stable-6.0 --recursive https://github.com/leifcr/passenger.git "$TMP_CLONE"; \
     rsync -a --delete "$TMP_CLONE"/ "${PASSENGER_DIR}/"; \
     rm -rf "$TMP_CLONE"; \
   fi; \
-  echo "Listing critical vendor path (cxxcodebuilder expected)"; \
+  echo "Listing vendor dir (expect cxxcodebuilder):"; \
   ls -1 "${PASSENGER_DIR}/build/support/vendor" || true
 
 # Step 2: Validate required submodule file
-RUN set -Eeuo pipefail; \
+RUN set -eu; \
   echo "[2/3] Validating submodules"; \
-  PASSENGER_DIR="$(bundle show passenger)"; \
+  PASSENGER_DIR="$(BUNDLE_WITHOUT='development:test' bundle show passenger)"; \
   TARGET="${PASSENGER_DIR}/build/support/vendor/cxxcodebuilder/lib/cxxcodebuilder.rb"; \
   if [ ! -f "$TARGET" ]; then \
     echo "ERROR: cxxcodebuilder missing: $TARGET"; \
@@ -112,28 +118,28 @@ RUN set -Eeuo pipefail; \
   echo "Submodule OK"
 
 # Step 3: Compile agent + native support with debug logging
-RUN set -Eeuo pipefail; \
+RUN set -eu; \
   echo "[3/3] Compiling passenger agent"; \
-  PASSENGER_DIR="$(bundle show passenger)"; \
+  PASSENGER_DIR="$(BUNDLE_WITHOUT='development:test' bundle show passenger)"; \
   rm -rf "${PASSENGER_DIR}/.git" || true; \
   export CFLAGS='-O3 -fno-omit-frame-pointer -pipe' \
          CXXFLAGS='-O3 -fno-omit-frame-pointer -pipe' \
          MAKEFLAGS="-j$(nproc)" \
          PASSENGER_DEBUG=1; \
-  bundle exec passenger-config --version; \
+  BUNDLE_WITHOUT='development:test' bundle exec passenger-config --version; \
   echo "Running compile-agent (verbose)"; \
-  if ! bundle exec passenger-config compile-agent --optimize --verbose; then \
+  if ! BUNDLE_WITHOUT='development:test' bundle exec passenger-config compile-agent --optimize; then \
     echo "compile-agent failed. Recent buildout logs:"; \
     find "${PASSENGER_DIR}/buildout" -maxdepth 2 -type f -name '*.log' -print -exec tail -n 50 {} \; || true; \
     exit 1; \
   fi; \
   echo "Building native support"; \
-  if ! bundle exec passenger-config build-native-support --verbose; then \
+  if ! BUNDLE_WITHOUT='development:test' bundle exec passenger-config build-native-support; then \
     echo "build-native-support failed"; \
     exit 1; \
   fi; \
   echo "Validating install"; \
-  bundle exec passenger-config validate-install --auto || { echo 'validate-install failed'; exit 1; }
+  BUNDLE_WITHOUT='development:test' bundle exec passenger-config validate-install --auto || { echo 'validate-install failed'; exit 1; }
 
 # RUN apt-get purge -y git rsync && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
@@ -141,9 +147,9 @@ RUN set -Eeuo pipefail; \
 # Prebuild Passenger standalone (Nginx) runtime so it won't compile at boot
 RUN set -e; \
   echo "Installing Passenger standalone runtime (Nginx engine)"; \
-  bundle exec passenger-config install-standalone-runtime --auto; \
+  BUNDLE_WITHOUT='development:test' bundle exec passenger-config install-standalone-runtime --auto; \
   # Sanity check: should list an 'Nginx engine' section
-  bundle exec passenger-config about standalone-runtime | grep -i nginx || (echo "Nginx runtime missing" && exit 1)
+  BUNDLE_WITHOUT='development:test' bundle exec passenger-config about standalone-runtime | grep -i nginx || (echo "Nginx runtime missing" && exit 1)
 
 ENV PASSENGER_DOWNLOAD_NATIVE_SUPPORT_BINARY=0 \
     PASSENGER_COMPILE_NATIVE_SUPPORT_BINARY=0
