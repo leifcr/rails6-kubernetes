@@ -2,25 +2,27 @@ FROM ruby:3.1
 LABEL org.opencontainers.image.authors='leifcr@gmail.com'
 LABEL description='Image for running rails 6 apps on kubernetes, with common gems preinstalled. Based on ruby:2.6 image'
 
-ENV APP_HOME /app
-ENV LANG C.UTF-8
+ENV APP_HOME='/app'
+ENV LANG='C.UTF-8'
 
-RUN apt-get update -q; \
+# Install dependencies
+RUN set -eux; \
+    . /etc/os-release; CODENAME="${VERSION_CODENAME}"; echo "Detected Debian codename: $CODENAME"; \
+    apt-get update -q; \
     apt-get install -y --no-install-recommends ca-certificates curl gnupg dirmngr; \
     mkdir -p /usr/share/keyrings; \
     # Yarn repo
     curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/yarn.gpg; \
     echo "deb [signed-by=/usr/share/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian stable main" > /etc/apt/sources.list.d/yarn.list; \
     # NodeSource (adjust node_20.x if needed)
-    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    && apt-key adv --keyserver keyserver.ubuntu.com --recv-key B7B3B788A8D3785C \
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - ; \
     # MySQL APT repo (only if codename supported)
     curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2023 | gpg --dearmor -o /usr/share/keyrings/mysql.gpg; \
     echo "deb [signed-by=/usr/share/keyrings/mysql.gpg] https://repo.mysql.com/apt/debian ${CODENAME} mysql-8.0" > /etc/apt/sources.list.d/mysqlclient.list; \
-    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update -q && apt-get upgrade -y \
-    && apt-get install -y \
+    curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg; \
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list; \
+    apt-get update -q && apt-get upgrade -y; \
+    apt-get install -y \
        build-essential \
        git \
        libxml2-dev \

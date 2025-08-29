@@ -2,8 +2,8 @@ FROM ruby:3.1
 LABEL org.opencontainers.image.authors='leifcr@gmail.com'
 LABEL description='Image for running rails 6 apps on kubernetes, with common gems preinstalled. Based on ruby:2.6 image'
 
-ENV APP_HOME /app
-ENV LANG C.UTF-8
+ENV APP_HOME='/app'
+ENV LANG='C.UTF-8'
 
 # For stretch:
 RUN apt-get update -q; \
