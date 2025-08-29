@@ -5,13 +5,16 @@ LABEL description='Image for running rails 6 apps on kubernetes, with common gem
 ENV APP_HOME /app
 ENV LANG C.UTF-8
 
-# For stretch:
-# RUN  apt-get install -y apt-transport-https ca-certificates gnupg wget --no-install-recommends && \
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list \
+RUN apt-get update -q; \
+    apt-get install -y --no-install-recommends ca-certificates curl gnupg dirmngr; \
+    mkdir -p /usr/share/keyrings; \
+    # Yarn repo
+    curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/yarn.gpg; \
+    echo "deb [signed-by=/usr/share/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian stable main" > /etc/apt/sources.list.d/yarn.list; \
+    # NodeSource (adjust node_20.x if needed)
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update -q && apt-get upgrade -y \
     && apt-get install -y \
        build-essential \
