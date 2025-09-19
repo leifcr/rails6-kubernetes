@@ -20,11 +20,10 @@ gem 'rails-i18n'
 # kaminari must be before elasticsearch to work with es
 gem 'kaminari'
 
-
-gem 'elasticsearch', '~> 7.1'       # Upgrade to 5.x (Can do 6.x as soon as elasticsearch-rails is 6.x compatible)
-gem 'elasticsearch-rails', '~> 7.1' # 5.x should be compatible with 6.x
-gem 'elasticsearch-model', '~> 7.1' # 5.x should be compatible with 6.x # rubocop:disable Bundler/OrderedGems
-gem 'elasticsearch-dsl'             # rubocop:disable Bundler/OrderedGems
+gem 'elasticsearch'
+gem 'elasticsearch-rails'
+gem 'elasticsearch-model' # rubocop:disable Bundler/OrderedGems
+gem 'elasticsearch-dsl' # rubocop:disable Bundler/OrderedGems
 
 # Nice progressbar to use in rake tasks
 gem 'ruby-progressbar', require: false
@@ -201,6 +200,7 @@ gem 'connection_pool'
 # Use Faraday for requests?
 gem 'excon'   # for using excon faraday adapter
 gem 'faraday' # do http requests over tons of adapters...
+gem 'faraday-excon' # Excon adapter for Faraday
 
 gem 'enumerize'
 

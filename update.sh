@@ -17,6 +17,10 @@ yarn outdated
 cd ..
 bundle outdated --strict
 
+cd mysql8-client-passenger
+bundle update
+cd ..
+
 cd mysql8-client-min
 bundle update
 cd ..
