@@ -5,6 +5,8 @@ LABEL description='Image for running rails 6 apps on kubernetes with mysql-8 cli
 ENV APP_HOME='/app'
 ENV LANG='C.UTF-8'
 
+COPY mysql.gpg /usr/share/keyrings/mysql.gpg
+
 # Install dependencies
 RUN set -eux; \
     . /etc/os-release; CODENAME="${VERSION_CODENAME}"; echo "Detected Debian codename: $CODENAME"; \
@@ -17,7 +19,6 @@ RUN set -eux; \
     # NodeSource (adjust node_20.x if needed)
     curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - ; \
     # MySQL APT repo (only if codename supported)
-    curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2023 | gpg --dearmor -o /usr/share/keyrings/mysql.gpg; \
     echo "deb [signed-by=/usr/share/keyrings/mysql.gpg] https://repo.mysql.com/apt/debian ${CODENAME} mysql-8.0" > /etc/apt/sources.list.d/mysqlclient.list; \
     apt-get update -q; \
     apt-get install -y --no-install-recommends \

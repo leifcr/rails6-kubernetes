@@ -5,6 +5,8 @@ LABEL description='Image for running rails 6 apps on kubernetes, with common gem
 ENV APP_HOME='/app'
 ENV LANG='C.UTF-8'
 
+COPY mysql.gpg /usr/share/keyrings/mysql.gpg
+
 # Install dependencies
 RUN set -eux; \
     . /etc/os-release; CODENAME="${VERSION_CODENAME}"; echo "Detected Debian codename: $CODENAME"; \
@@ -17,8 +19,6 @@ RUN set -eux; \
     # NodeSource (adjust node_20.x if needed)
     curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - ; \
     # MySQL APT repo (only if codename supported)
-    curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2023 | gpg --dearmor -o /usr/share/keyrings/mysql.gpg; \
-    echo "deb [signed-by=/usr/share/keyrings/mysql.gpg] https://repo.mysql.com/apt/debian ${CODENAME} mysql-8.0" > /etc/apt/sources.list.d/mysqlclient.list; \
     curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg; \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list; \
     apt-get update -q && apt-get upgrade -y; \
