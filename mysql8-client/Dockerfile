@@ -5,8 +5,6 @@ LABEL description='Image for running rails 6 apps on kubernetes with mysql-8 cli
 ENV APP_HOME='/app'
 ENV LANG='C.UTF-8'
 
-COPY mysql.gpg /usr/share/keyrings/mysql.gpg
-
 # Install dependencies
 RUN set -eux; \
     . /etc/os-release; CODENAME="${VERSION_CODENAME}"; echo "Detected Debian codename: $CODENAME"; \
@@ -16,12 +14,15 @@ RUN set -eux; \
     # Yarn repo
     curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/yarn.gpg; \
     echo "deb [signed-by=/usr/share/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian stable main" > /etc/apt/sources.list.d/yarn.list; \
-    # NodeSource (adjust node_20.x if needed)
-    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - ; \
-    # MySQL APT repo (only if codename supported)
+    # NodeSource
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -; \
+    # MySQL repo key (full key from ubuntu keyserver; avoids trimmed key issue)
+    curl -fsSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xB7B3B788A8D3785C" | gpg --dearmor -o /usr/share/keyrings/mysql.gpg; \
+    gpg --show-keys --keyid-format long /usr/share/keyrings/mysql.gpg | grep -q B7B3B788A8D3785C || { echo 'MySQL key missing expected ID'; exit 1; }; \
     echo "deb [signed-by=/usr/share/keyrings/mysql.gpg] https://repo.mysql.com/apt/debian ${CODENAME} mysql-8.0" > /etc/apt/sources.list.d/mysqlclient.list; \
     apt-get update -q; \
     apt-get install -y --no-install-recommends \
+       apt-transport-https \
        build-essential \
        git \
        libxml2-dev \

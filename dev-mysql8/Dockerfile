@@ -5,8 +5,6 @@ LABEL description='Image for running rails 6 apps on kubernetes, with common gem
 ENV APP_HOME='/app'
 ENV LANG='C.UTF-8'
 
-COPY mysql.gpg /usr/share/keyrings/mysql.gpg
-
 # Install dependencies
 RUN set -eux; \
     . /etc/os-release; CODENAME="${VERSION_CODENAME}"; echo "Detected Debian codename: $CODENAME"; \
@@ -16,13 +14,20 @@ RUN set -eux; \
     # Yarn repo
     curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/yarn.gpg; \
     echo "deb [signed-by=/usr/share/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian stable main" > /etc/apt/sources.list.d/yarn.list; \
-    # NodeSource (adjust node_20.x if needed)
-    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - ; \
-    # MySQL APT repo (only if codename supported)
+    # NodeSource
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -; \
+    # MySQL repo key (full key from ubuntu keyserver; avoids trimmed key issue)
+    curl -fsSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xB7B3B788A8D3785C" | gpg --dearmor -o /usr/share/keyrings/mysql.gpg; \
+    gpg --show-keys --keyid-format long /usr/share/keyrings/mysql.gpg | grep -q B7B3B788A8D3785C || { echo 'MySQL key missing expected ID'; exit 1; }; \
+    echo "deb [signed-by=/usr/share/keyrings/mysql.gpg] https://repo.mysql.com/apt/debian ${CODENAME} mysql-8.0" > /etc/apt/sources.list.d/mysqlclient.list; \
+    # Chrome key
     curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg; \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list; \
-    apt-get update -q && apt-get upgrade -y; \
-    apt-get install -y \
+    apt-get update -q; \
+    apt-get install -y --no-install-recommends apt-transport-https; \
+    apt-get purge -y --auto-remove gnupg dirmngr; \
+    rm -rf /var/lib/apt/lists/*; \
+    apt-get update -q && apt-get install -y \
        build-essential \
        git \
        libxml2-dev \
@@ -51,20 +56,12 @@ COPY imagemagick_policy.xml /etc/ImageMagick-6/policy.xml
 # Copy docker entry point
 COPY docker-entrypoint.sh /usr/local/bin/
 
-# Make entrypoint executable when building on Windows
-# And backwards compatible entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh && ln -s /usr/local/bin/docker-entrypoint.sh /docker-entrypoint.sh
 
-# Continue as rails user
 USER rails
-
-# Set workdir to /app, so COPY, ADD, RUN and ENTRYPOINT is run within folder
 WORKDIR $APP_HOME
 
-# Add Gemfile
 COPY --chown=rails:rails Gemfile Gemfile.lock update_webdrivers.rb ./
-# Install gems
 RUN gem install bundler && bundle install --jobs 20 --retry 5 && bundle exec ruby update_webdrivers.rb && yarn install
 
-# Set entry point to bundle exec, as all cmd's with rails should be prepended
 ENTRYPOINT ["docker-entrypoint.sh"]
