@@ -49,8 +49,6 @@ RUN set -eux; \
      groupadd -g 1001 rails; \
      useradd -s /bin/bash -m -d /home/rails --uid 1001 -g rails rails; \
      chown rails:rails /app; \
-     # Remove build-time only GPG tooling (optional)
-     apt-get purge -y --auto-remove gnupg dirmngr; \
      rm -rf /var/lib/apt/lists/*
 
 # Copy Imagemagick policy to allow converting PDF to thumbnails

@@ -25,7 +25,6 @@ RUN set -eux; \
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list; \
     apt-get update -q; \
     apt-get install -y --no-install-recommends apt-transport-https; \
-    apt-get purge -y --auto-remove gnupg dirmngr; \
     rm -rf /var/lib/apt/lists/*; \
     apt-get update -q && apt-get install -y \
        build-essential \
