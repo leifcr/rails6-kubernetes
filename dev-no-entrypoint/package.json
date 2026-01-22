@@ -42,7 +42,7 @@
     "jquery.fancytree": "^2.30.2",
     "js-cookie": "^3.0.1",
     "loadcss": "^0.0.2",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.23",
     "lozad": "^1.16.0",
     "magnific-popup": "^1.1.0",
     "moment": "^2.24.0",
